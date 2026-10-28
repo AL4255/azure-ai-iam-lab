@@ -17,3 +17,8 @@ provider "azurerm" {
 variable "subscription_id" {
   type = string
 }
+
+resource "azurerm_resource_group" "lab" {
+  name     = "rg-ai-lab"
+  location = "centralus"
+}
