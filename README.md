@@ -37,20 +37,6 @@ flowchart LR
     end
 ```
 
-## Progress
-
-- [x] **Step 0:** Project setup: SSH key, git, `.gitignore` for state and secrets
-- [x] **Step 1:** Provider config and resource group
-- [x] **Step 2:** Virtual network and subnet
-- [ ] **Step 3:** Network security group: SSH from my IP only
-- [ ] **Step 4:** Public IP, network interface and outputs
-- [ ] **Step 5:** Linux VM with cloud-init
-- [ ] **Step 6:** Explore and harden the VM
-- [ ] **Step 7:** Destroy and rebuild from code
-- [ ] Managed identity and storage with scoped RBAC roles
-- [ ] AI agent with list / read / delete tools
-- [ ] Prompt injection test and Log Analytics (KQL) evidence
-
 ## Security decisions
 
 | Decision | Why |
