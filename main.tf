@@ -94,3 +94,44 @@ resource "azurerm_network_interface" "lab" {
 
   }
 }
+
+resource "azurerm_linux_virtual_machine" "lab" {
+  name                  = "vm-ai-lab"
+  location              = azurerm_resource_group.lab.location
+  resource_group_name   = azurerm_resource_group.lab.name
+  size                  = "Standard_B2s"
+  admin_username        = "azureuser"
+  network_interface_ids = [azurerm_network_interface.lab.id]
+
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = file(pathexpand("~/.ssh/ai_lab_ed25519.pub"))
+
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "Ubuntu-24_04-lts"
+    sku       = "server"
+    version   = "latest"
+  }
+}
+
+resource "azurerm_dev_test_global_vm_shutdown_schedule" "lab" {
+  virtual_machine_id    = azurerm_linux_virtual_machine.lab.id
+  location              = azurerm_resource_group.lab.location
+  enabled               = true
+  daily_recurrence_time = "2300"
+  timezone              = "Central Standard Time"
+
+  notification_settings {
+    enabled = false
+  }
+}
+
