@@ -42,6 +42,11 @@ resource "azurerm_subnet" "lab" {
 variable "admin_ip" {
   type        = string
   description = "My public IP, allowed to SSH"
+
+  validation {
+    condition     = can(cidrhost("${var.admin_ip}/32", 0))
+    error_message = "admin_ip must be a valid IPv4 address, e.g 203.0.113.5."
+  }
 }
 
 resource "azurerm_network_security_group" "lab" {
@@ -51,14 +56,14 @@ resource "azurerm_network_security_group" "lab" {
 
   security_rule {
     name                       = "allow"
-    priorty                    = 100
+    priority                   = 100
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
     source_address_prefix      = "${var.admin_ip}/32"
-    destination_address_prefix = 
+    destination_address_prefix = "*"
   }
 }
 
@@ -67,12 +72,25 @@ resource "azurerm_subnet_network_security_group_association" "lab" {
   network_security_group_id = azurerm_network_security_group.lab.id
 }
 
-resource "azurerm_public_ip" "lab"{
+resource "azurerm_public_ip" "lab" {
   name                = "pip-ai-lab"
   location            = azurerm_resource_group.lab.location
   resource_group_name = azurerm_resource_group.lab.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
-resoruce "azurerm_network_interface" "lab" {
+resource "azurerm_network_interface" "lab" {
+  name                = "nic-ai-lab"
+  location            = azurerm_resource_group.lab.location
+  resource_group_name = azurerm_resource_group.lab.name
 
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.lab.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.lab.id
+
+  }
 }
