@@ -1,0 +1,12 @@
+#cloud-config
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - jq
+  - python3-venv
+  - unattended-upgrades
+
+runcmd:
+  - echo "cloud-init finished at $(date)" > /var/log/lab-ready.txt
