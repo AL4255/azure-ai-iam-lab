@@ -4,5 +4,5 @@ output "public_ip" {
 }
 
 output "ssh_command" {
-  value = "ssh -i ~/.ssh/ai_lab_ed25519 azureuser@{azurerm_public_ip.lab.ip_address}"
+  value = "ssh -i ~/.ssh/ai_lab_ed25519 azureuser@${azurerm_public_ip.lab.ip_address}"
 }
