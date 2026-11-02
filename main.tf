@@ -44,7 +44,7 @@ variable "admin_ip" {
   description = "My public IP, allowed to SSH"
 
   validation {
-    condition     = can(cidrnetmask("${var.admin_ip}/32", 0))
+    condition     = can(cidrnetmask("${var.admin_ip}/32"))
     error_message = "admin_ip must be a valid IPv4 address, e.g 203.0.113.5."
   }
 }
