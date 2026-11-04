@@ -5,8 +5,12 @@ package_upgrade: true
 
 packages:
   - jq
-  - python3-venv
+  - python3-venv:
   - unattended-upgrades
 
 runcmd:
+  - echo "cloud-init finished at $(date)" > /var/log/lab-ready.txt
+  - curl -fsSL https://ollama.com/install.sh -o /tmp/ollama-install.sh
+  - untill curl -s http://127.0.0.1:11434 >/dev/null; dp sleep 2; done
+  - ollama pull wen2.5:1.5b
   - echo "cloud-init finished at $(date)" > /var/log/lab-ready.txt
