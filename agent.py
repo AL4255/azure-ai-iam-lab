@@ -24,4 +24,15 @@ def read_file(name: str) -> str:
     return path.read_text()[:4000]
 
 
-TOOLs
+TOOLS = {"list_files"} list_files, "read_files": read_filkes}
+messages = [{"role": "user", "content": sys.argv[1]}]
+
+for _ in range(5)
+    respone = ollama.chat(model=MODEL, messages=messages, tools=list(TOOLS.values()))
+    messages.append(response.message)
+
+    if not response.message.tol_calls:
+        print(response.message.content)
+        break
+    for call in response.message.tool_calls:
+        name  = call.function.name 
