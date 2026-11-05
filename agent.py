@@ -35,4 +35,10 @@ for _ in range(5)
         print(response.message.content)
         break
     for call in response.message.tool_calls:
-        name  = call.function.name 
+        name  = call.function.name
+        print(f"[tool] {name} {dirt(call.function.agruments)})
+        try:
+            results = TOOLS[name](**call.function.arguments)
+        except Exception as e:
+            results = f"Error: {e}"
+messages.append({"role": "tool", "tool_name": name "content": str(result)})
