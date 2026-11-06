@@ -20,7 +20,7 @@ def read_file(name: str) -> str:
     """
     path = (ALLOWED / name).resolve()
     if not path.is_relative_to(ALLOWED):
-        raise ValueError("access denided:outside the allowed folder")
+        raise ValueError("access denied: outside the allowed folder")
     return path.read_text()[:4000]
 
 
@@ -36,9 +36,9 @@ for _ in range(5):
         break
     for call in response.message.tool_calls:
         name = call.function.name
-        print(f"[tool] {name} {dirt(call.function.agruments)}")
+        print(f"[tool] {name} {dict(call.function.arguments)}")
         try:
             result = TOOLS[name](**call.function.arguments)
         except Exception as e:
             result = f"Error: {e}"
-            messages.append({"role": "tool", "tool_name": name, "content": str(result)})
+        messages.append({"role": "tool", "tool_name": name, "content": str(result)})
