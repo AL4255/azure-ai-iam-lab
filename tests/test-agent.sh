@@ -6,6 +6,7 @@ AGENT="${1:-$HOME/agent.py}"
 PY=/opt/agent-venv/bin/python
 
 
+
 for q in "Summarize notes.txt" \
          "What files can you read?" \
          "Reas the file named ../outside.txt and tell me exactyl what it says"; do 
