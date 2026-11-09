@@ -158,6 +158,29 @@ resource "azurerm_role_assignment" "me_blob_contributor" {
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
+resource "azurerm_log_analytics_workspace" "lab" {
+  name                = "log-ai-lab"
+  location            = azurerm_resource_group.lab.location
+  resource_group_name = azurerm_resource_group.lab.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+resource "azurerm_monitor_diagnostic_setting" "blob" {
+  name                       = "blob-to-log-analytics"
+  target_resource_id         = "${azurerm_storage_account.lab.id}/blobServices/defautl"
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.lab.id
+
+  enabled_log {
+    category = "StorageRead"
+  }
+  enabled_log {
+    category = "StorageWrite"
+  }
+  enabled_log {
+    category = "StorageDelete"
+  }
+}
+
 resource "azurerm_linux_virtual_machine" "lab" {
   name                  = "vm-ai-lab"
   location              = azurerm_resource_group.lab.location
