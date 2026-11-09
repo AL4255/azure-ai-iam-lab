@@ -138,10 +138,24 @@ resource "azurerm_storage_container" "docs" {
   container_access_type = "private"
 }
 
-resource "azurerm_storage_container" "sercets" {
-  name                  = "sercets"
+resource "azurerm_storage_container" "secrets" {
+  name                  = "secrets"
   storage_account_id    = azurerm_storage_account.lab.id
   container_access_type = "private"
+}
+
+resource "azurerm_role_assignment" "agent_read_docs" {
+  scope                = azurerm_storage_container.docs.id
+  role_definition_name = "Storage Blob Data Reader"
+  principal_id         = azurerm_user_assigned_identity.agent.principal_id
+  principal_type       = "ServicePrincipal"
+}
+data "azurerm_client_config" "current" {}
+
+resource "azurerm_role_assignment" "me_blob_contributor" {
+  scope                = azurerm_storage_account.lab.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azurerm_client_config.current.object_id
 }
 
 resource "azurerm_linux_virtual_machine" "lab" {
