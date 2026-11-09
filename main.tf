@@ -132,6 +132,17 @@ resource "azurerm_storage_account" "lab" {
 
 }
 
+resource "azurerm_storage_container" "docs" {
+  name                  = "docs"
+  storage_account_id    = azurerm_storage_account.lab.id
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "sercets" {
+  name                  = "sercets"
+  storage_account_id    = azurerm_storage_account.lab.id
+  container_access_type = "private"
+}
 
 resource "azurerm_linux_virtual_machine" "lab" {
   name                  = "vm-ai-lab"
