@@ -102,6 +102,7 @@ resource "azurerm_linux_virtual_machine" "lab" {
   size                  = "Standard_B2s"
   admin_username        = "azureuser"
   network_interface_ids = [azurerm_network_interface.lab.id]
+  custom_data           = filebase64("${path.module}/cloud-init.yaml")
 
   disable_password_authentication = true
 

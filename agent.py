@@ -3,7 +3,7 @@ from pathlib import Path
 
 import ollama
 
-MODEL = "qwen2.5:1.5b"
+MODEL = "qwen2.5:3b"
 ALLOWED = (Path.home() / "agent-data").resolve()
 
 
@@ -25,7 +25,10 @@ def read_file(name: str) -> str:
 
 
 TOOLS = {"list_files": list_files, "read_file": read_file}
-messages = [{"role": "user", "content": sys.argv[1]}]
+messages = [
+        {"role": "system", "content": "Use list_files to see which files exist. Use read_file(name=...) to read one. Never guess file names or contents. If a tool returns an error, report that exact error."},
+    {"role": "user", "content": sys.argv[1]}
+ ]
 
 for _ in range(5):
     response = ollama.chat(model=MODEL, messages=messages, tools=list(TOOLS.values()))
@@ -41,4 +44,6 @@ for _ in range(5):
             result = TOOLS[name](**call.function.arguments)
         except Exception as e:
             result = f"Error: {e}"
+        print(f"[result] {str(result)[:200]}")    
         messages.append({"role": "tool", "tool_name": name, "content": str(result)})
+

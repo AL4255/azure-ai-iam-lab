@@ -11,6 +11,7 @@ packages:
 runcmd:
   - curl -fsSL https://ollama.com/install.sh -o /tmp/ollama-install.sh
   - sh /tmp/ollama-install.sh
+  - systemctl enable --now ollama
   - timeout 120 sh -c 'until curl -s http://127.0.0.1:11434 >/dev/null; do sleep 2; done'
   - HOME=/root ollama pull qwen2.5:1.5b
   - python3 -m venv /opt/agent-venv
