@@ -2,6 +2,10 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
+      version = "~>4.0"
+    }
+    random = {
+      source  = "hashicorp/random"
       version = "~>3.6"
     }
   }
@@ -9,8 +13,8 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id = var.subscription_id
-  storage_use_azuread = true 
+  subscription_id     = var.subscription_id
+  storage_use_azuread = true
 }
 
 
@@ -36,7 +40,7 @@ resource "azurerm_subnet" "lab" {
   resource_group_name  = azurerm_resource_group.lab.name
   virtual_network_name = azurerm_virtual_network.lab.name
   address_prefixes     = ["10.60.1.0/24"]
-  service_endpoints = ["Mircosoft.Storage"]
+  service_endpoints    = ["Mircosoft.Storage"]
 }
 
 
@@ -103,9 +107,27 @@ resource "azurerm_user_assigned_identity" "agent" {
   resource_group_name = azurerm_resource_group.lab.name
 }
 resource "random_string" "suffix" {
-  length  = 6 
-  upper   = false :
+  length  = 6
+  upper   = false
   special = false
+}
+
+resource "azurerm_storage_account" "lab" {
+  name                     = "staillab${random_string.suffix.result}"
+  location                 = azurerm_resource_group.lab.location
+  resource_group_name      = azurerm_resource_group.lab.name
+  account_tier             = "Standard"
+  account_replicatoon_type = "LRS"
+  min_tls_veriosn          = "TLS1_2"
+
+
+  shared_access_key_enabled       = false
+  allow_nested_items_to_be_public = false
+
+  network_rules {
+
+  }
+
 }
 
 
