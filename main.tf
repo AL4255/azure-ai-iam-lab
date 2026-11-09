@@ -1,9 +1,8 @@
 terraform {
   required_providers {
     azurerm = {
-
       source  = "hashicorp/azurerm"
-      version = "~>4.0"
+      version = "~>3.6"
     }
   }
 }
@@ -11,6 +10,7 @@ terraform {
 provider "azurerm" {
   features {}
   subscription_id = var.subscription_id
+  storage_use_azuread = true 
 }
 
 
@@ -36,6 +36,7 @@ resource "azurerm_subnet" "lab" {
   resource_group_name  = azurerm_resource_group.lab.name
   virtual_network_name = azurerm_virtual_network.lab.name
   address_prefixes     = ["10.60.1.0/24"]
+  service_endpoints = ["Mircosoft.Storage"]
 }
 
 
@@ -95,6 +96,19 @@ resource "azurerm_network_interface" "lab" {
   }
 }
 
+
+resource "azurerm_user_assigned_identity" "agent" {
+  name                = "id-ai-agent"
+  location            = azurerm_resource_group.lab.location
+  resource_group_name = azurerm_resource_group.lab.name
+}
+resource "random_string" "suffix" {
+  length  = 6 
+  upper   = false :
+  special = false
+}
+
+
 resource "azurerm_linux_virtual_machine" "lab" {
   name                  = "vm-ai-lab"
   location              = azurerm_resource_group.lab.location
@@ -103,6 +117,10 @@ resource "azurerm_linux_virtual_machine" "lab" {
   admin_username        = "azureuser"
   network_interface_ids = [azurerm_network_interface.lab.id]
   custom_data           = filebase64("${path.module}/cloud-init.yaml")
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.agent.id]
+  }
 
   disable_password_authentication = true
 
