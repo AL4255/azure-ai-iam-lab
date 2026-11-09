@@ -6,6 +6,7 @@ The goal: run a local AI agent on a Linux VM, give it a **managed identity** wit
 least privilege it needs, then attack it with prompt injection and prove that the
 identity, not the model, is what stops it doing damage.
 
+
 > Built step by step as part of studying for the SC-500 (Cloud and AI Security Engineer) exam.
 
 ## Why this matters
