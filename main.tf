@@ -40,7 +40,7 @@ resource "azurerm_subnet" "lab" {
   resource_group_name  = azurerm_resource_group.lab.name
   virtual_network_name = azurerm_virtual_network.lab.name
   address_prefixes     = ["10.60.1.0/24"]
-  service_endpoints    = ["Mircosoft.Storage"]
+  service_endpoints    = ["Microsoft.Storage"]
 }
 
 
@@ -117,15 +117,17 @@ resource "azurerm_storage_account" "lab" {
   location                 = azurerm_resource_group.lab.location
   resource_group_name      = azurerm_resource_group.lab.name
   account_tier             = "Standard"
-  account_replicatoon_type = "LRS"
-  min_tls_veriosn          = "TLS1_2"
+  account_replication_type = "LRS"
+  min_tls_version          = "TLS1_2"
 
 
   shared_access_key_enabled       = false
   allow_nested_items_to_be_public = false
 
   network_rules {
-
+    default_action             = "Deny"
+    ip_rules                   = [var.admin_ip]
+    virtual_network_subnet_ids = [azurerm_subnet.lab.id]
   }
 
 }
