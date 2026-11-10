@@ -188,7 +188,10 @@ resource "azurerm_linux_virtual_machine" "lab" {
   size                  = "Standard_B2s"
   admin_username        = "azureuser"
   network_interface_ids = [azurerm_network_interface.lab.id]
-  custom_data           = filebase64("${path.module}/cloud-init.yaml")
+  custom_data = base64encode(templatefile("${path.module}/cloud-init.yaml", {
+    storage_account = azurerm_storage_account.lab.name
+    client_id       = azurerm_user_assigned_identity.agent.client_id
+  }))
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.agent.id]
