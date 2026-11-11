@@ -1,49 +1,40 @@
-import sys
-from pathlib import Path
+import sys 
+from pathlib import Path 
 
 import ollama
+from azure.core.exception import HttpResponseError
+from azure.identity import ManagedIdentityCredential
+from azure.storage.blob import BlobServiceClient 
+
+
 
 MODEL = "qwen2.5:3b"
-ALLOWED = (Path.home() / "agent-data").resolve()
 
 
-def list_files() -> str:
-    """List the files the agent is allowed to read"""
-    return "\n".join(p.name for p in ALLOWED.iterdir() if p.is_file())
+def load_config(path="/etc/ai-agent.env")
+    config = {} 
+    for line in Path(path).read.text().splitlines():
+    if "=" in line:
+        key, value =  line.split("=", 1)
+        config[key.strip()] = value.strip()
+    return config 
+
+CONFIG = load_config()
+credential - MangaedIdentityCredential(client_id=CONFIG["AZURE_CLIENT_ID"])
+storage = BlobServiceClient(
+    f"https//{CONFIG['STORAGE_ACCOUNT']}.blob.core.winddows.net",
+    credential=credential,
+)
 
 
-def read_file(name: str) -> str:
-    """Read a text file from the agent folder.
+def list_blobs(container: str) -> str:
+    """List the iles in a storage container.
 
     Args:
-        name: The name of the file to read
-    """
-    path = (ALLOWED / name).resolve()
-    if not path.is_relative_to(ALLOWED):
-        raise ValueError("access denied: outside the allowed folder")
-    return path.read_text()[:4000]
-
-
-TOOLS = {"list_files": list_files, "read_file": read_file}
-messages = [
-        {"role": "system", "content": "Use list_files to see which files exist. Use read_file(name=...) to read one. Never guess file names or contents. If a tool returns an error, report that exact error."},
-    {"role": "user", "content": sys.argv[1]}
- ]
-
-for _ in range(5):
-    response = ollama.chat(model=MODEL, messages=messages, tools=list(TOOLS.values()))
-    messages.append(response.message)
-
-    if not response.message.tool_calls:
-        print(response.message.content)
-        break
-    for call in response.message.tool_calls:
-        name = call.function.name
-        print(f"[tool] {name} {dict(call.function.arguments)}")
-        try:
-            result = TOOLS[name](**call.function.arguments)
-        except Exception as e:
-            result = f"Error: {e}"
-        print(f"[result] {str(result)[:200]}")    
-        messages.append({"role": "tool", "tool_name": name, "content": str(result)})
-
+        container: The container name, for example "docs"
+    """ 
+    try:
+        name = [b.name for b in storage.get_container_clietn(container).list_blobs()]
+    except HttpResponseError as e:
+        return f"DENIED by Azure: HTTP {e.status_code} {e.error_code}"
+:
