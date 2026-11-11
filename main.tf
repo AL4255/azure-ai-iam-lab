@@ -167,7 +167,7 @@ resource "azurerm_log_analytics_workspace" "lab" {
 }
 resource "azurerm_monitor_diagnostic_setting" "blob" {
   name                       = "blob-to-log-analytics"
-  target_resource_id         = "${azurerm_storage_account.lab.id}/blobServices/defautl"
+  target_resource_id         = "${azurerm_storage_account.lab.id}/blobServices/default"
   log_analytics_workspace_id = azurerm_log_analytics_workspace.lab.id
 
   enabled_log {
