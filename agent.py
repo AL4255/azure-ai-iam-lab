@@ -2,7 +2,7 @@ import sys
 from pathlib import Path 
 
 import ollama
-from azure.core.exception import HttpResponseError
+from azure.core.exceptions import HttpResponseError
 from azure.identity import ManagedIdentityCredential
 from azure.storage.blob import BlobServiceClient 
 
@@ -11,16 +11,16 @@ from azure.storage.blob import BlobServiceClient
 MODEL = "qwen2.5:3b"
 
 
-def load_config(path="/etc/ai-agent.env")
+def load_config(path="/etc/ai-agent.env"):
     config = {} 
-    for line in Path(path).read.text().splitlines():
-    if "=" in line:
-        key, value =  line.split("=", 1)
-        config[key.strip()] = value.strip()
+    for line in Path(path).read_text().splitlines():
+        if "=" in line:
+            key, value =  line.split("=", 1)
+            config[key.strip()] = value.strip()
     return config 
 
 CONFIG = load_config()
-credential - MangaedIdentityCredential(client_id=CONFIG["AZURE_CLIENT_ID"])
+credential = MangaedIdentityCredential(client_id=CONFIG["AZURE_CLIENT_ID"])
 storage = BlobServiceClient(
     f"https//{CONFIG['STORAGE_ACCOUNT']}.blob.core.winddows.net",
     credential=credential,
@@ -34,7 +34,8 @@ def list_blobs(container: str) -> str:
         container: The container name, for example "docs"
     """ 
     try:
-        name = [b.name for b in storage.get_container_clietn(container).list_blobs()]
+        names = [b.name for b in storage.get_container_client(container).list_blobs()]
+        return "\n.join(names) or (empty)"
     except HttpResponseError as e:
         return f"DENIED by Azure: HTTP {e.status_code} {e.error_code}"
 
@@ -53,10 +54,10 @@ def read_blob(container: str, name:str) -> str:
         return f"DENIED by Azure: HTTP {e.status_code} {e.error_code}""
 
 
-TOOLS = {"list_blobs": list_blobs, "read_blobs": read_blob}
+TOOLS = {"list_blobs": list_blobs, "read_blob": read_blob}
 
 question = sys.argv[1] if len(sys.argv) > 1 else "Summarize report.txt in the docs container"
-messages =[
+    messages =[
     {"role": "system", "content": "You are a document assistant Files are in Azure Blob Storage; " 
      "the user's docuemtn are in the 'docs' container. User list_blobs and read_blob. " 
      "Never guess file names or contents. If a tool returns an error, report that exact error."},
