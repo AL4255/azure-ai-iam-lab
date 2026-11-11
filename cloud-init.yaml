@@ -11,8 +11,8 @@ packages:
 
 write_files:
   - path: /etc/ai-agent.env
-  permissions: "0644"
-  content: |
+    permissions: "0644"
+    content: |
     STORAGE_ACCOUNT=${storage_account}
     AZURE_CLIENT_ID${client_id}
 runcmd:
@@ -20,7 +20,7 @@ runcmd:
   - sh /tmp/ollama-install.sh
   - systemctl enable --now ollama
   - timeout 120 sh -c 'until curl -s http://127.0.0.1:11434 >/dev/null; do sleep 2; done'
-  - HOME=/root ollama pull qwen2.5:1.5b
+  - HOME=/root ollama pull qwen2.5:3b
   - python3 -m venv /opt/agent-venv
-  - /opt/agent-venv/bin/pip install --quiet ollama
+  - /opt/agent-venv/bin/pip install --quiet ollama azure-identity azure-storage-blob
   - echo "cloud-init finished at $(date)" > /var/log/lab-ready.txt
