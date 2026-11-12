@@ -57,12 +57,32 @@ def read_blob(container: str, name:str) -> str:
 TOOLS = {"list_blobs": list_blobs, "read_blob": read_blob}
 
 question = sys.argv[1] if len(sys.argv) > 1 else "Summarize report.txt in the docs container"
-    messages =[
+    messages = [
     {"role": "system", "content": "You are a document assistant Files are in Azure Blob Storage; " 
      "the user's docuemtn are in the 'docs' container. User list_blobs and read_blob. " 
      "Never guess file names or contents. If a tool returns an error, report that exact error."},
     {"role": "user", "content": question},
-]
+], 
+
+
+
+for _ in range(5)
+    response = ollama.chat(model=MODEL, messages=messages, tools=list(TOOLS.values()))
+    messages.append(reponse.message)
+
+    if not response.message.tool_calls:
+        print(response.message.content)
+        break   
+    for call in response.message.tool_calls:
+        name = call.function.name
+        print (f"[tool] {name} {dict(call.function.arguments)}")
+        try:
+            result = TOOLS[name](**call.function.arguments)
+    expcept Exception as e:
+        result = f"Error: {e}"
+    print(f"[result] {str(result)[:200]}")
+    messages.append({"role": "tool", "tool_name": name, "content": str(result)})
+
 
 
 
