@@ -4,7 +4,14 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-SA="${1:-$(terraform -chdir=.. output -raw storage_account)}"
+SA="${1:-$(terraform -chdir=.. output -raw storage_account 2>/dev/null)}"
+
+# terraform prints a warning to stdout (exit 0) when nothing is deployed,
+# so check it's a real storage account name before using it.
+if [[ ! "$SA" =~ ^[a-z0-9]{3,24}$ ]]; then
+  echo "No storage account found. Run 'terraform apply' first." >&2
+  exit 1
+fi
 
 for container in docs secrets; do
   for f in "$container"/*; do
