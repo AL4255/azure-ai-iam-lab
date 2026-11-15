@@ -17,7 +17,6 @@ provider "azurerm" {
   storage_use_azuread = true
 }
 
-
 variable "subscription_id" {
   type = string
 }
@@ -26,7 +25,6 @@ resource "azurerm_resource_group" "lab" {
   name     = "rg-ai-lab"
   location = "centralus"
 }
-
 
 resource "azurerm_virtual_network" "lab" {
   name                = "vnet-ai-lab"
@@ -42,7 +40,6 @@ resource "azurerm_subnet" "lab" {
   address_prefixes     = ["10.60.1.0/24"]
   service_endpoints    = ["Microsoft.Storage"]
 }
-
 
 variable "admin_ip" {
   type        = string
@@ -90,7 +87,6 @@ resource "azurerm_network_interface" "lab" {
   location            = azurerm_resource_group.lab.location
   resource_group_name = azurerm_resource_group.lab.name
 
-
   ip_configuration {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.lab.id
@@ -99,7 +95,6 @@ resource "azurerm_network_interface" "lab" {
 
   }
 }
-
 
 resource "azurerm_user_assigned_identity" "agent" {
   name                = "id-ai-agent"
@@ -120,8 +115,6 @@ resource "azurerm_storage_account" "lab" {
   account_replication_type = "LRS"
   min_tls_version          = "TLS1_2"
 
-
-  shared_access_key_enabled       = false
   allow_nested_items_to_be_public = false
 
   network_rules {
