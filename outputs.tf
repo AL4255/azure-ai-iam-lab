@@ -11,7 +11,7 @@ output "storage_account" {
   value = azurerm_storage_account.lab.name
 }
 
-output "agent-principal_id" {
+output "agent_principal_id" {
   description = "The agent's object ID: this is RequesterObjectId in the logs"
   value       = azurerm_user_assigned_identity.agent.principal_id
 }
